@@ -187,39 +187,19 @@ class MSCKF(object):
             self.is_first_img = False
             self.state_server.imu_state.timestamp = feature_msg.timestamp
 
-        t = time.time()
-
-        # Propogate the IMU state.
-        # that are received before the image msg.
+        # Propogate the IMU state that are received before the image msg.
         self.batch_imu_processing(feature_msg.timestamp)
-
-        print('---batch_imu_processing    ', time.time() - t)
-        t = time.time()
 
         # Augment the state vector.
         self.state_augmentation(feature_msg.timestamp)
 
-        print('---state_augmentation      ', time.time() - t)
-        t = time.time()
-
-        # Add new observations for existing features or new features 
-        # in the map server.
+        # Add new observations for existing features or new features in the map server. 
+        # Perform measurement update if necessary, and prune features and camera states.
         self.add_feature_observations(feature_msg)
-
-        print('---add_feature_observations', time.time() - t)
-        t = time.time()
-
-        # Perform measurement update if necessary.
-        # And prune features and camera states.
         self.remove_lost_features()
-
-        print('---remove_lost_features    ', time.time() - t)
-        t = time.time()
-
         self.prune_cam_state_buffer()
 
-        print('---prune_cam_state_buffer  ', time.time() - t)
-        print('---msckf elapsed:          ', time.time() - start, f'({feature_msg.timestamp})')
+        print('===msckf elapsed:          ', time.time() - start, f'({feature_msg.timestamp})')
 
         try:
             # Publish the odometry.
@@ -758,8 +738,7 @@ class MSCKF(object):
                 cam_state_pairs[cam_state_idx][1].orientation)
             
             distance = np.linalg.norm(position - key_position)
-            angle = 2 * np.arccos(to_quaternion(
-                rotation @ key_rotation.T)[-1])
+            angle = 2 * np.arccos(to_quaternion(rotation @ key_rotation.T)[-1])
 
             if angle < 0.2618 and distance < 0.4 and self.tracking_rate > 0.5:
                 rm_cam_state_ids.append(cam_state_pairs[cam_state_idx][0])
@@ -941,9 +920,7 @@ class MSCKF(object):
         print('   velocity:', imu_state.velocity)
         print()
         
-        T_i_w = Isometry3d(
-            to_rotation(imu_state.orientation).T,
-            imu_state.position)
+        T_i_w = Isometry3d(to_rotation(imu_state.orientation).T, imu_state.position)
         T_b_w = IMUState.T_imu_body * T_i_w * IMUState.T_imu_body.inverse()
         body_velocity = IMUState.T_imu_body.R @ imu_state.velocity
 

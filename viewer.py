@@ -1,6 +1,8 @@
 import numpy as np
+
+import sys
+import pypangolin as pangolin
 import OpenGL.GL as gl
-import pangolin
 import cv2
 
 from multiprocessing import Queue, Process
@@ -39,23 +41,22 @@ class Viewer(object):
         viewpoint_z = -18 
         viewpoint_f = 1000
 
-        proj = pangolin.ProjectionMatrix(
-            1024, 768, viewpoint_f, viewpoint_f, 512, 389, 0.1, 300)
-        look_view = pangolin.ModelViewLookAt(
-            viewpoint_x, viewpoint_y, viewpoint_z, 0, 0, 0, 0, -1, 0)
+        proj = pangolin.ProjectionMatrix(1024, 768, viewpoint_f, viewpoint_f, 512, 389, 0.1, 300)
+        
+        look_view = pangolin.ModelViewLookAt(viewpoint_x, viewpoint_y, viewpoint_z, 0, 0, 0, 0, -1, 0)
 
         # Camera Render Object (for view / scene browsing)
         scam = pangolin.OpenGlRenderState(proj, look_view)
 
         # Add named OpenGL viewport to window and provide 3D Handler
         dcam = pangolin.CreateDisplay()
-        dcam.SetBounds(0.0, 1.0, 175 / 1024., 1.0, -1024 / 768.)
+        # dcam.SetBounds(0, 1, 0, 1, 1024 / 768.)
         dcam.SetHandler(pangolin.Handler3D(scam))
 
         # image
         width, height = 376, 240
         dimg = pangolin.Display('image')
-        dimg.SetBounds(0, height / 768., 0.0, width / 1024., 1024 / 768.)
+        # dimg.SetBounds(0, height / 768., 0.0, width / 1024., 1024 / 768.)
         dimg.SetLock(pangolin.Lock.LockLeft, pangolin.Lock.LockTop)
 
         texture = pangolin.GlTexture(width, height, gl.GL_RGB, False, 0, gl.GL_RGB, gl.GL_UNSIGNED_BYTE)

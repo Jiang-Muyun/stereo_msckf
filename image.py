@@ -112,19 +112,19 @@ class ImageProcessor(object):
             # Track the feature in the previous image.
             t = time.time()
             self.track_features()
-            print('___track_features:', time.time() - t)
+            # print('___track_features:', time.time() - t)
             t = time.time()
 
             # Add new features into the current image.
             self.add_new_features()
-            print('___add_new_features:', time.time() - t)
+            # print('___add_new_features:', time.time() - t)
             t = time.time()
             self.prune_features()
-            print('___prune_features:', time.time() - t)
+            # print('___prune_features:', time.time() - t)
             t = time.time()
             # Draw results.
             # self.draw_features_stereo()
-            print('___draw_features_stereo:', time.time() - t)
+            # print('___draw_features_stereo:', time.time() - t)
             t = time.time()
 
         print('===image process elapsed:', time.time() - start, f'({stereo_msg.timestamp})')
